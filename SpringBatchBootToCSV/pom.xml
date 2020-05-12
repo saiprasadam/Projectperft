@@ -6,8 +6,7 @@
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-parent</artifactId>
   <version>1.5.10.RELEASE</version>
-   <url>https://repo.maven.apache.org</url>	
- <!-- <relativePath/>  lookup parent from repository -->
+  <relativePath/> <!-- lookup parent from repository -->
  </parent>
  <groupId>com.springboot.csv</groupId>
 	<artifactId>SpringBatchBootToCSV</artifactId>
