@@ -11,7 +11,7 @@ public class TestWebApp implements TestApp {
 	
 	
 
-	@Override
+	
 	public String getTimeAsString() {
 		// TODO Auto-generated method stub
 		
@@ -19,7 +19,6 @@ public class TestWebApp implements TestApp {
 		return sm.format(new Date());
 	}
 
-	@Override
 	public String GetTutorialService() {
 		// TODO Auto-generated method stub
 		String TutorialName = "Web Services";
