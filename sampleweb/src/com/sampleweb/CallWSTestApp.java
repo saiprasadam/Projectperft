@@ -9,7 +9,7 @@ public class CallWSTestApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println("object created");
-Endpoint.publish("http://localhost:8080/testApp", new TestWebApp());
+Endpoint.publish("http://localhost:8280/testApp", new TestWebApp());
 System.out.println("Url enabled");
 	}
 
