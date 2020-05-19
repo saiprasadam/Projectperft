@@ -32,7 +32,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.springboot.csv.model.EmpDet;
+import com.springboot.csv.model.StatusInfo;
 
 @Configuration
 @EnableBatchProcessing
@@ -86,25 +86,27 @@ public class BatchConfiguration {
 	 }
 	 
 	 @Bean
-	 public JdbcCursorItemReader<EmpDet> reader(){
-	  JdbcCursorItemReader<EmpDet> reader = new JdbcCursorItemReader<EmpDet>();
+	 public JdbcCursorItemReader<StatusInfo> reader(){
+	  JdbcCursorItemReader<StatusInfo> reader = new JdbcCursorItemReader<StatusInfo>();
 	  reader.setDataSource(dataSource());
-	  reader.setSql("SELECT empid,empname,salary,age FROM empdetail");
+	  reader.setSql("SELECT empid,name,date,task_for_today,work_done_tomorrow,blocker FROM daily_status");
 	  reader.setRowMapper(new UserRowMapper());
 	  
 	  return reader;
 	 }
 	 
 	 
-	 public class UserRowMapper implements RowMapper<EmpDet>{
+	 public class UserRowMapper implements RowMapper<StatusInfo>{
 
 	  @Override
-	  public EmpDet mapRow(ResultSet rs, int rowNum) throws SQLException {
-		  EmpDet user = new EmpDet();
-	   user.setEmpId(rs.getInt("EmpId"));
-	   user.setEmpName(rs.getString("EmpName"));
-	   user.setSalary(rs.getInt("Salary"));
-	   user.setAge(rs.getInt("Age"));
+	  public StatusInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
+		  StatusInfo user = new StatusInfo();
+	   user.setEmpid(rs.getInt("empid"));
+	   user.setName(rs.getString("name"));
+	   user.setDate(rs.getDate("date"));
+	   user.setTask_for_today(rs.getString("task_for_today"));
+			   user.setWork_done_tomorrow(rs.getString("work_done_tomorrow"));
+	   user.setBlocker(rs.getString("blocker"));
 	   
 	   return user;
 	  }
@@ -119,10 +121,10 @@ public class BatchConfiguration {
 	 private Resource outputResource = new FileSystemResource("output/Emp1.csv");
 
 	    @Bean
-	    public FlatFileItemWriter<EmpDet> writer() 
+	    public FlatFileItemWriter<StatusInfo> writer() 
 	    {
 	        //Create writer instance
-	        FlatFileItemWriter<EmpDet> writer = new FlatFileItemWriter<>();
+	        FlatFileItemWriter<StatusInfo> writer = new FlatFileItemWriter<>();
 	         
 	        //Set output file location
 	        writer.setResource(outputResource);
@@ -130,10 +132,10 @@ public class BatchConfiguration {
 	        //All job repetitions should "append" to same output file
 	        writer.setAppendAllowed(true);
 	      
-	  writer.setLineAggregator(new DelimitedLineAggregator<EmpDet>() {{
+	  writer.setLineAggregator(new DelimitedLineAggregator<StatusInfo>() {{
 	   setDelimiter(",");
-	      setFieldExtractor(new BeanWrapperFieldExtractor<EmpDet>() {{
-	    setNames(new String[] { "empId", "empName","salary","age" });
+	      setFieldExtractor(new BeanWrapperFieldExtractor<StatusInfo>() {{
+	    setNames(new String[] { "empid", "name","date","task_for_today","work_done_tomorrow","blocker"});
 	   }});
 	  }});
 	  
@@ -142,7 +144,7 @@ public class BatchConfiguration {
 	 
 	 @Bean
 	 public Step step1() {
-	  return stepBuilderFactory.get("step1").<EmpDet, EmpDet> chunk(10)
+	  return stepBuilderFactory.get("step1").<StatusInfo, StatusInfo> chunk(10)
 	    .reader(reader())
 	    .processor(processor())
 	    .writer(writer())
